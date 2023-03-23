@@ -4,6 +4,10 @@ import ast
 from pathlib import Path
 from typing import IO, Any
 
+from rich import print  # type: ignore
+
+from .doc_string import DocString
+
 
 class DocumaticModule:
     """Traverse a module's AST and render documentation into `file`"""
@@ -35,30 +39,25 @@ class DocumaticModule:
         node: ast.ClassDef | ast.Module | ast.FunctionDef | ast.AsyncFunctionDef,
     ):
         """Render doc-string of a node."""
-        docstring = ast.get_docstring(node)
-        if docstring:
-            lines = docstring.splitlines()
-            args = False
-            for i in lines:
-                i = i.strip()
-                if ":" in i and i.split(":")[0] == "Returns":
-                    self.write("### Returns:\n")
-                    self.write(f'{i.split(":")[1]}\n')
-                elif i in ("Args:", "Raises:"):
-                    self.write(f"### {i}\n")
-                    args = True
-                elif args:
-                    if ":" not in i:
-                        self.write("\n")
-                        args = False
-                    else:
-                        name, doc = i.split(":")
-                        name = name.strip()
-                        doc = doc.strip()
-                        self.write(f" - `{name}`: {doc}\n")
-                else:
-                    self.write(f"{i}\n")
-            self.write("\n")
+        _docstring = ast.get_docstring(node)
+        if _docstring:
+            docstring = DocString(_docstring)
+            if docstring.summary:
+                self.write(docstring.summary + "\n\n")
+            if docstring.description:
+                self.write(docstring.description + "\n\n")
+            if docstring.args:
+                self.write(f"### Arguments:\n\n")
+            for name, desc in docstring.args:
+                self.write(f" - `{name}`: {desc}\n\n")
+            if docstring.attributes:
+                self.write(f"### Attributes:\n\n")
+            for name, desc in docstring.attributes:
+                self.write(f" - `{name}`: {desc}\n\n")
+            if docstring.raises:
+                self.write(f"### Raises:\n\n")
+            for name, desc in docstring.raises:
+                self.write(f" - `{name}`: {desc}\n\n")
 
     def get_function_signature(self, node: ast.FunctionDef) -> str:
         """Returns the signature of a function node."""

@@ -18,14 +18,18 @@ def __init__(self, module_path: Path, file: IO[str]):
     ...
 ```
 
-### Args:
+
+Returns: Nothing.
+
+
+### Arguments:
+
  - `module_path`: Path to module's source code.
+
  - `file`: The output file to render documentation into.
 
-### Returns:
- Nothing.
-
 ### Raises:
+
  - `FileNotFoundError`: If the module's file is not found.
 
 ## method `DocumaticModule.write_docstring`
