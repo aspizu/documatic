@@ -13,15 +13,11 @@ class DocumaticModule:
     """Traverse a module's AST and render documentation into `file`"""
 
     def __init__(self, module_path: Path, file: IO[str]):
-        """
+        """Traverse a module's AST and render documentation into `file`
+
         Args:
             module_path: Path to module's source code.
             file: The output file to render documentation into.
-
-        Returns: Nothing.
-
-        Raises:
-            FileNotFoundError: If the module's file is not found.
         """
         self.path = module_path
         """Path to module's source code."""
@@ -121,4 +117,22 @@ class DocumaticModule:
         self.write(f"# class `{node.name}`\n\n")
         self.write(f"```py\n{self.get_class_signature(node)}\n```\n\n")
         self.write_docstring(node)
+        for init_func in ast.iter_child_nodes(node):
+            if isinstance(init_func, ast.FunctionDef) and init_func.name == "__init__":
+                attr = ""
+                collect = False
+                for stmt in ast.iter_child_nodes(init_func):
+                    if collect:
+                        if isinstance(stmt, ast.Expr) and isinstance(
+                            stmt.value, ast.Constant
+                        ):
+                            desc = stmt.value.value
+                            self.write(f" - `{attr}`: {desc}\n\n")
+                        collect = False
+                    elif isinstance(stmt, ast.Assign) and isinstance(
+                        stmt.targets[0], ast.Attribute
+                    ):
+                        attr = stmt.targets[0].attr
+                        collect = True
+
         self.class_all(node.name, node)

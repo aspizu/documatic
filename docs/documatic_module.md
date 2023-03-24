@@ -11,6 +11,12 @@ class DocumaticModule:
 
 Traverse a module's AST and render documentation into `file`
 
+ - `path`: Path to module's source code.
+
+ - `source`: Text content of the module's source code.
+
+ - `root`: Root node of the module's AST.
+
 ## method `DocumaticModule.__init__`
 
 ```py
@@ -18,8 +24,9 @@ def __init__(self, module_path: Path, file: IO[str]):
     ...
 ```
 
+Traverse a module's AST and render documentation into `file`
 
-Returns: Nothing.
+
 
 
 ### Arguments:
@@ -27,10 +34,6 @@ Returns: Nothing.
  - `module_path`: Path to module's source code.
 
  - `file`: The output file to render documentation into.
-
-### Raises:
-
- - `FileNotFoundError`: If the module's file is not found.
 
 ## method `DocumaticModule.write_docstring`
 
