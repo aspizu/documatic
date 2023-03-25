@@ -10,24 +10,23 @@ class MarkdownWriter(BaseWriter):
         self.write_module(self.module)
 
     def write_module(self, module: doc.Module):
-        self.indent_write(
+        self.writeln(
             f"**Auto-generated** using [documatic](https://github.com/aspizu/documatic)\n\n"
         )
-        self.indent_write(f"# {module.name}\n\n")
+        self.writeln(f"# {module.name}\n\n")
 
         def index_class(node: doc.Module | doc.Class):
-            self.indent()
-            for class_ in node.classes.values():
-                self.indent_write(
-                    f" - [{class_.name}](#{class_.name.replace('.','')})\n"
-                )
-                index_class(class_)
-            self.dedent()
+            with self.indent():
+                for class_ in node.classes.values():
+                    self.writeln(
+                        f" - [{class_.name}](#{class_.name.replace('.','')})\n"
+                    )
+                    index_class(class_)
 
-        self.dedent()
+        self.indent_level -= 1
         index_class(module)
-        self.indent()
-        self.indent_write("\n")
+        self.indent_level += 1
+        self.writeln("\n")
 
         for function in module.functions.values():
             self.write_function(function)
@@ -36,43 +35,43 @@ class MarkdownWriter(BaseWriter):
             self.write_class(class_)
 
     def write_class(self, class_: doc.Class):
-        self.indent_write(f"# `{class_.name}`\n\n")
-        self.indent_write("```py\n")
+        self.writeln(f"# `{class_.name}`\n\n")
+        self.writeln("```py\n")
         self.write(class_.signature)
-        self.indent_write("\n```\n")
+        self.writeln("\n```\n")
         if class_.summary:
-            self.indent_write(class_.summary + "\n\n")
+            self.writeln(class_.summary + "\n\n")
         if class_.description:
-            self.indent_write(class_.description + "\n")
+            self.writeln(class_.description + "\n")
         if class_.attributes:
-            self.indent_write("### Attributes:\n")
+            self.writeln("### Attributes:\n")
             for name, desc in class_.attributes.items():
-                self.indent_write(f" - `{name}`: {desc}\n")
-            self.indent_write("\n")
+                self.writeln(f" - `{name}`: {desc}\n")
+            self.writeln("\n")
         for subclass in class_.classes.values():
             self.write_class(subclass)
         for function in class_.functions.values():
             self.write_function(function)
 
     def write_function(self, function: doc.Function):
-        self.indent_write(f"## `{function.name}`\n\n")
-        self.indent_write("```py\n")
+        self.writeln(f"## `{function.name}`\n\n")
+        self.writeln("```py\n")
         self.write(function.signature)
-        self.indent_write("\n```\n")
+        self.writeln("\n```\n")
         if function.summary:
-            self.indent_write(function.summary + "\n\n")
+            self.writeln(function.summary + "\n\n")
         if function.description:
-            self.indent_write(function.description + "\n")
+            self.writeln(function.description + "\n")
         if function.arguments:
-            self.indent_write("### Arguments:\n")
+            self.writeln("### Arguments:\n")
             for name, desc in function.arguments.items():
-                self.indent_write(f" - `{name}`: {desc}\n")
-            self.indent_write("\n")
+                self.writeln(f" - `{name}`: {desc}\n")
+            self.writeln("\n")
         if function.returns:
-            self.indent_write("### Returns:\n")
-            self.indent_write(function.returns + "\n")
+            self.writeln("### Returns:\n")
+            self.writeln(function.returns + "\n")
         if function.exceptions:
-            self.indent_write("### Raises:\n")
+            self.writeln("### Raises:\n")
             for name, desc in function.exceptions.items():
-                self.indent_write(f" - `{name}`: {desc}\n")
-            self.indent_write("\n")
+                self.writeln(f" - `{name}`: {desc}\n")
+            self.writeln("\n")

@@ -1,12 +1,4 @@
-from __future__ import annotations
-
 import textwrap
-from typing import TYPE_CHECKING
-
-from rich import print  # type: ignore
-
-if TYPE_CHECKING:
-    ...
 
 
 class DocString:
