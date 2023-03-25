@@ -3,7 +3,7 @@
 # test1
 
  - [MyClass](#MyClass)
-     - [MyClass.MyInnerClass](#MyClass.MyInnerClass)
+     - [MyClass.MyInnerClass](#MyClassMyInnerClass)
 
 ## `my_function`
 

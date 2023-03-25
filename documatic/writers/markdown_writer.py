@@ -18,7 +18,9 @@ class MarkdownWriter(BaseWriter):
         def index_class(node: doc.Module | doc.Class):
             self.indent()
             for class_ in node.classes.values():
-                self.indent_write(f" - [{class_.name}](#{class_.name})\n")
+                self.indent_write(
+                    f" - [{class_.name}](#{class_.name.replace('.','')})\n"
+                )
                 index_class(class_)
             self.dedent()
 
