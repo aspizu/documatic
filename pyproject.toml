@@ -1,3 +1,5 @@
 [tool.pyright]
 typeCheckingMode = "strict"
 useLibraryCodeForTypes = true
+reportImportCycles = false
+ignore = ["test/"]

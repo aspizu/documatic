@@ -1,68 +1,60 @@
 from __future__ import annotations
 
+import textwrap
 from typing import TYPE_CHECKING
 
 from rich import print  # type: ignore
 
 if TYPE_CHECKING:
-    from rich.repr import RichReprResult
+    ...
 
 
 class DocString:
-    """Parse a google format doc-string."""
+    def __init__(self, doc: str, attributes: dict[str, str] | None = None):
+        self.summary = doc.splitlines()[0]
+        self.description = None
+        doc = textwrap.dedent(doc[len(self.summary) + 2 :])
 
-    def __init__(self, doc: str):
-        lines = doc.splitlines()
-        self.summary: str | None = None
-        """First line of the doc-string."""
-        self.description: str | None = None
-        """Any line in the doc-string that isn't the first or part of a section."""
-        self.args: list[tuple[str, str]] = []
-        """List of tuples for argument names and description."""
-        self.raises: list[tuple[str, str]] = []
-        """List of tuples for exception names and condition."""
-        self.attributes: list[tuple[str, str]] = []
-        """List of tuples for attribute names and description."""
+        self.attributes: dict[str, str] = attributes or {}
+        self.arguments: dict[str, str] = {}
+        self.returns = None
+        self.exceptions: dict[str, str] = {}
 
-        if len(lines) > 0 and lines[0] not in ("Args:", "Raises:", "Attributes:"):
-            self.summary = lines[0]
-            lines.pop(0)
+        self.parse(doc)
 
-        collect = ""
-        for line in lines:
-            if collect != "":
-                if line == "":
-                    collect = ""
+    def parse(self, doc: str):
+        codeblock = False
+        collector = None
+        for line in (doc + "\n\n").splitlines():
+            if collector is not None:
+                if line[:2] != "  ":
+                    collector = None
                     continue
-                if collect == "args":
-                    collector = self.args
-                elif collect == "raises":
-                    collector = self.raises
-                elif collect == "attributes":
-                    collector = self.attributes
-                else:
-                    raise SyntaxError
-                if ":" in line:
-                    arg, desc = line.split(":")
-                    collector.append((arg.lstrip(), desc.lstrip()))
-                else:
-                    v = collector[-1]
-                    collector[-1] = (v[0], v[1] + line.lstrip())
-
-            elif line == "Args:":
-                collect = "args"
-            elif line == "Raises:":
-                collect = "raises"
-            elif line == "Attributes:":
-                collect = "attributes"
+                if collector in ("Attributes:", "Args:", "Raises:"):
+                    name, desc = line[2:].split(": ")
+                    {
+                        "Attributes:": self.attributes,
+                        "Args:": self.arguments,
+                        "Raises:": self.exceptions,
+                    }[collector][name] = desc
+                elif collector == "Returns:":
+                    if self.returns is None:
+                        self.returns = line
+                    else:
+                        self.returns += "\n" + line
+            elif line in ("Attributes:", "Args:", "Raises:", "Returns:"):
+                collector = line
             else:
-                if not self.description:
+                if self.description is None:
                     self.description = ""
-                self.description = self.description + "\n" + line
-
-    def __rich_repr__(self) -> RichReprResult:
-        yield "summary", self.summary, None
-        yield "description", self.description, None
-        yield "args", self.args, []
-
-    __rich_repr__.angular = True  # type: ignore
+                if line.lstrip().startswith(">>>") or line.lstrip().startswith("..."):
+                    if not codeblock:
+                        codeblock = True
+                        self.description += "```py\n"
+                else:
+                    if codeblock:
+                        codeblock = False
+                        self.description += "```\n"
+                self.description += line + "\n"
+        if self.description:
+            self.description = self.description[:-1]
