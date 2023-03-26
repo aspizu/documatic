@@ -6,12 +6,19 @@ from .doc_string import DocString
 
 
 class Transformer:
+    """Extract documentation from Python source-code into documentation objects."""
+
     def __init__(self, module_path: Path):
+        """
+        Args:
+          module_path: Path to a Python source-code file.
+        """
         self.module_path = module_path
         self.source = module_path.read_text()
         self.module_name = module_path.stem
 
-    def transform(self):
+    def transform(self) -> doc.Module:
+        """Transforms the Python module into a documentation object."""
         return self.module(ast.parse(self.source))
 
     def module(self, node: ast.Module):
@@ -83,21 +90,38 @@ class Transformer:
             self.get_class_signature(node),
         )
 
-    def collect_attributes(self, node: ast.ClassDef, attributes: dict[str, str]):
+    def collect_attributes(self, class_: ast.ClassDef, attributes: dict[str, str]):
+        """Collect atribute doc-strings from a `ast.ClassDef` node into `attributes`
+
+        Looks for atribute assignments in the class's __init__ function."""
         name = ""
-        for initfunc in ast.iter_child_nodes(node):
-            if isinstance(initfunc, ast.FunctionDef) and initfunc.name == "__init__":
-                for stmt in ast.iter_child_nodes(initfunc):
-                    if isinstance(stmt, ast.Assign) and isinstance(
-                        stmt.targets[0], ast.Attribute
+        for class_child in ast.iter_child_nodes(class_):
+            if (
+                isinstance(class_child, ast.FunctionDef)
+                and class_child.name == "__init__"
+            ):
+                for initfunc_child in ast.iter_child_nodes(class_child):
+                    if isinstance(initfunc_child, ast.Assign) and isinstance(
+                        initfunc_child.targets[0], ast.Attribute
                     ):
-                        name = stmt.targets[0].attr
-                    elif isinstance(stmt, ast.Expr) and isinstance(
-                        stmt.value, ast.Constant
+                        name = initfunc_child.targets[0].attr
+                    elif isinstance(initfunc_child, ast.Expr) and isinstance(
+                        initfunc_child.value, ast.Constant
                     ):
                         if name:
-                            attributes[name] = stmt.value.value
+                            attributes[name] = initfunc_child.value.value
                             name = ""
+            # FIXME: Collect doc-strings from top-level attribute assignments or type-hints.
+            # elif isinstance(class_child, ast.Assign) and isinstance(
+            #     class_child.targets[0], ast.Attribute
+            # ):
+            #     name = class_child.targets[0].attr
+            # elif isinstance(class_child, ast.Expr) and isinstance(
+            #     class_child.value, ast.Constant
+            # ):
+            #     if name:
+            #         attributes[name] = class_child.value.value
+            #         name = ""
 
     def get_function_signature(self, node: ast.FunctionDef) -> str:
         """Returns the signature of a function node."""

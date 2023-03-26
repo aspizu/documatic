@@ -2,17 +2,17 @@ import argparse
 import shutil
 from pathlib import Path
 
-from . import writers
 from .transformer import Transformer
+from .writers import MarkdownWriter, WriterType, available_writers
 
 
 def main_command(
     input: Path | None,
     output: Path | None = None,
-    writer: writers.WriterType | None = None,
+    writer: WriterType | None = None,
 ):
     if writer is None:
-        writer = writers.MarkdownWriter
+        writer = MarkdownWriter
     if input is None:
         for initfile in Path().glob("*/__init__.py"):
             input = initfile.parent
@@ -26,13 +26,13 @@ def main_command(
     render_package(input, output, writer)
 
 
-def render_package(input: Path, output: Path, writer: writers.WriterType):
+def render_package(input: Path, output: Path, writer: WriterType):
     print(f" - Rendering documentation for package: {input}")
     dir = output / input.stem
     dir.mkdir()
     for module in input.glob("*.py"):
         print(f" >>> - Rendering documentation for module: {module}")
-        with (dir / f"{module.stem}.md").open("w") as file:
+        with (dir / f"{module.stem}{writer.extension}").open("w") as file:
             writer(Transformer(module).transform(), file)
     for subpackage in input.iterdir():
         if subpackage.is_dir() and (subpackage / "__init__.py").is_file():
@@ -45,9 +45,6 @@ class Application(argparse.ArgumentParser):
             prog="documatic",
             description="Easy to use documentation generator for Python.",
         )
-        writers_map: dict[str, writers.WriterType] = {
-            name: getattr(writers, name) for name in writers.__all__
-        }
         self.add_argument(
             "--input",
             type=self.parse_input,
@@ -60,14 +57,14 @@ class Application(argparse.ArgumentParser):
         self.add_argument(
             "--output",
             type=self.parse_output,
-            help="Path to a directory to render documentation into. Will be cleared.",
+            help="Path to a directory to render documentation into. Will be cleared. Defaults to docs/",
             default=Path("docs"),
         )
         self.add_argument(
             "--writer",
             help=(
                 f"Writer used to render documentation files. "
-                f"Available writers: {', '.join(writers_map.keys())}. "
+                f"Available writers: {', '.join(available_writers.keys())}. "
                 f"Defaults to MarkdownWriter."
             ),
             default=None,
@@ -76,7 +73,7 @@ class Application(argparse.ArgumentParser):
 
         input: Path | None = namespace.input
         output: Path | None = namespace.output
-        writer = writers_map[namespace.writer] if namespace.writer else None
+        writer = available_writers[namespace.writer] if namespace.writer else None
 
         main_command(input, output, writer)
 

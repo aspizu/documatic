@@ -17,6 +17,22 @@ class DocString:
     ...
 ```
 
+A class for parsing and storing information from a docstring.
+
+
+
+
+
+### Attributes:
+
+ - `summary`: The summary of the docstring, which is the first line of the docstring.
+
+ - `description`: The description of the docstring, which is everything after the summary.
+
+ - `returns`: The description of the return value specified in the docstring.
+
+
+
 ## `__init__`
 
 
@@ -25,6 +41,17 @@ class DocString:
 def __init__(self, doc: str, attributes: dict[str, str] | None):
     ...
 ```
+
+Parse a google formatted doc-string.
+
+
+### Arguments:
+
+ - `doc`: The docstring to be parsed.
+
+ - `attributes`: A dictionary of additional attributes. Defaults to None.
+
+
 
 ## `parse`
 

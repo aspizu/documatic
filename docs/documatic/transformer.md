@@ -17,6 +17,12 @@ class Transformer:
     ...
 ```
 
+Extract documentation from Python source-code into documentation objects.
+
+
+
+
+
 ## `__init__`
 
 
@@ -26,14 +32,26 @@ def __init__(self, module_path: Path):
     ...
 ```
 
+Args:
+
+
+module_path: Path to a Python source-code file.
+
+
 ## `transform`
 
 
 ```py
 
-def transform(self):
+def transform(self) -> doc.Module:
     ...
 ```
+
+Transforms the Python module into a documentation object.
+
+
+
+
 
 ## `module`
 
@@ -67,9 +85,15 @@ def class_(self, node: ast.ClassDef, parents: str):
 
 ```py
 
-def collect_attributes(self, node: ast.ClassDef, attributes: dict[str, str]):
+def collect_attributes(self, class_: ast.ClassDef, attributes: dict[str, str]):
     ...
 ```
+
+Collect atribute doc-strings from a `ast.ClassDef` node into `attributes`
+
+
+Looks for atribute assignments in the class's __init__ function.
+
 
 ## `get_function_signature`
 

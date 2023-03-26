@@ -17,6 +17,13 @@ class MarkdownWriter:
     ...
 ```
 
+Writer for markdown.
+
+
+This class implements a Writer for rendering documentation in the markdown format.
+As doc-string descriptions are written in markdown, it will simply render them as-is.
+
+
 ## `__init__`
 
 

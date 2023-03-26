@@ -16,8 +16,19 @@ def md_render(text: str) -> str:
 
 
 class HTMLWriter(BaseWriter):
+    """Writer for HTML.
+
+    This class implements a Writer for rendering documentation in the HTML format.
+    As doc-string descriptions are written in markdown, `markdown-it-py` is used
+    to render the markdown text into HTML.
+
+    A stylesheet link with the url `/style.css` will be added.
+    """
+
+    extension = ".html"
+
     def __init__(self, module: doc.Module, file: IO[str]):
-        super().__init__(module, file, indent_width=2)
+        super().__init__(module, file, indent_width=0)
         self.write_module(self.module)
 
     def itag(self, opening_tag: str):
@@ -47,7 +58,7 @@ class HTMLWriter(BaseWriter):
                 self.writeln(
                     '<meta name="viewport" content="width=device-width, initial-scale=1.0" />'
                 )
-                self.writeln('<link rel="stylesheet" href="style.css" />')
+                self.writeln('<link rel="stylesheet" href="/style.css" />')
                 self.tag("title", module.name)
             with self.itag("body"):
                 self.tag("h1", module.name)
@@ -60,7 +71,7 @@ class HTMLWriter(BaseWriter):
                     self.write_class(class_)
 
     def write_class(self, class_: doc.Class):
-        self.tag("h1", class_.name)
+        self.tag("h1", f"<code>{class_.name}</code>")
         self.tag("pre", f"<code>{class_.signature}</code>")
         if class_.summary:
             self.writeln(md_render(class_.summary))
@@ -77,4 +88,13 @@ class HTMLWriter(BaseWriter):
             self.write_class(subclass)
 
     def write_function(self, function: doc.Function):
-        ...
+        self.tag("h2", f"<code>{function.name}</code>")
+        if function.summary:
+            self.writeln(md_render(function.summary))
+        if function.description:
+            self.writeln(md_render(function.description))
+        if function.arguments:
+            self.tag("h3", "Args:")
+            with self.itag("ul"):
+                for name, desc in function.arguments.items():
+                    self.tag("li", f"<code>{name}</code>: {desc}")

@@ -26,6 +26,16 @@ class HTMLWriter:
     ...
 ```
 
+Writer for HTML.
+
+
+This class implements a Writer for rendering documentation in the HTML format.
+As doc-string descriptions are written in markdown, `markdown-it-py` is used
+to render the markdown text into HTML.
+
+A stylesheet link with the url `/style.css` will be added.
+
+
 ## `__init__`
 
 

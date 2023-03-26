@@ -13,7 +13,7 @@
 
 ```py
 
-def main_command(input: Path | None, output: Path | None, writer: writers.WriterType | None):
+def main_command(input: Path | None, output: Path | None, writer: WriterType | None):
     ...
 ```
 
@@ -22,7 +22,7 @@ def main_command(input: Path | None, output: Path | None, writer: writers.Writer
 
 ```py
 
-def render_package(input: Path, output: Path, writer: writers.WriterType):
+def render_package(input: Path, output: Path, writer: WriterType):
     ...
 ```
 

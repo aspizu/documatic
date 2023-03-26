@@ -5,6 +5,14 @@ from . import BaseWriter
 
 
 class MarkdownWriter(BaseWriter):
+    """Writer for markdown.
+
+    This class implements a Writer for rendering documentation in the markdown format.
+    As doc-string descriptions are written in markdown, it will simply render them as-is.
+    """
+
+    extension = ".md"
+
     def __init__(self, module: doc.Module, file: IO[str]):
         super().__init__(module, file)
         self.write_module(self.module)

@@ -2,15 +2,29 @@ import textwrap
 
 
 class DocString:
+    """A class for parsing and storing information from a docstring."""
+
     def __init__(self, doc: str, attributes: dict[str, str] | None = None):
+        """Parse a google formatted doc-string.
+
+        Args:
+          doc: The docstring to be parsed.
+          attributes: A dictionary of additional attributes. Defaults to None.
+        """
         self.summary = doc.splitlines()[0]
+        """The summary of the docstring, which is the first line of the docstring."""
         self.description = None
+        """The description of the docstring, which is everything after the summary."""
         doc = textwrap.dedent(doc[len(self.summary) + 2 :])
 
         self.attributes: dict[str, str] = attributes or {}
+        """A dictionary of the attributes specified in the docstring."""
         self.arguments: dict[str, str] = {}
+        """A dictionary of the arguments specified in the docstring."""
         self.returns = None
+        """The description of the return value specified in the docstring."""
         self.exceptions: dict[str, str] = {}
+        """A dictionary of the exceptions specified in the docstring."""
 
         self.parse(doc)
 
@@ -47,6 +61,9 @@ class DocString:
                     if codeblock:
                         codeblock = False
                         self.description += "```\n"
-                self.description += line + "\n"
+                if codeblock:
+                    self.description += line.lstrip() + "\n"
+                else:
+                    self.description += line + "\n"
         if self.description:
             self.description = self.description[:-1]
