@@ -32,10 +32,10 @@ def __init__(self, module_path: Path):
     ...
 ```
 
-Args:
+### Arguments:
 
+ - `module_path`: Path to a Python source-code file.
 
-module_path: Path to a Python source-code file.
 
 
 ## `transform`
@@ -90,6 +90,8 @@ def collect_attributes(self, class_: ast.ClassDef, attributes: dict[str, str]):
 ```
 
 Collect atribute doc-strings from a `ast.ClassDef` node into `attributes`
+
+
 
 
 Looks for atribute assignments in the class's __init__ function.

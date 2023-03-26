@@ -22,6 +22,8 @@ class BaseWriter:
 Generic class that provides basic functionality for rendering documentation to a file.
 
 
+
+
 Extend this class to create a writer that renders documentation in a specific format
 such as markdown or HTML. The `extension` attribute must be set to the file-extension
 of the output format.
@@ -80,11 +82,12 @@ def __init__(self, writer: BaseWriter, enter_callback: Callable[[], None], leave
     ...
 ```
 
-Args:
+### Arguments:
 
+ - `enter_callback`: Function to be called before indenting.
 
-enter_callback: Function to be called before indenting.
- leave_callback: Function to be called after dedenting.
+ - `leave_callback`: Function to be called after dedenting.
+
 
 
 ## `__enter__`
@@ -114,12 +117,14 @@ def __init__(self, module: doc.Module, file: IO[str], indent_width: int):
     ...
 ```
 
-Args:
+### Arguments:
 
+ - `module`: The module object whose documentation is to be rendered.
 
-module: The module object whose documentation is to be rendered.
- file: Output file the documentation is rendered into.
- indent_width: The number of spaces to use for each level of indentation. Defaults to 4.
+ - `file`: Output file the documentation is rendered into.
+
+ - `indent_width`: The number of spaces to use for each level of indentation. Defaults to 4.
+
 
 
 ## `write`
@@ -134,7 +139,8 @@ def write(self, string: str) -> None:
 Write a string into the output file. The current indentation level will be
 
 
-nserted after each newline character in the string.
+
+inserted after each newline character in the string.
 
 
 ## `writeln`
@@ -149,7 +155,8 @@ def writeln(self, string: str) -> None:
 Write a line into the output file. The current indentation level will be
 
 
-nserted before the line and after each newline character. A newline character
+
+inserted before the line and after each newline character. A newline character
 will be appended to the end of the line.
 
 
@@ -163,6 +170,9 @@ def indent(self, enter_callback: Callable[[], None], leave_callback: Callable[[]
 ```
 
 Returns a `BaseWriter.WithIndent` object to be used in a `with` statement.
+
+
+
 
 
 ### Arguments:

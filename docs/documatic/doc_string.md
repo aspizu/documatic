@@ -45,6 +45,9 @@ def __init__(self, doc: str, attributes: dict[str, str] | None):
 Parse a google formatted doc-string.
 
 
+
+
+
 ### Arguments:
 
  - `doc`: The docstring to be parsed.

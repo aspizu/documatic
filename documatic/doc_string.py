@@ -1,6 +1,3 @@
-import textwrap
-
-
 class DocString:
     """A class for parsing and storing information from a docstring."""
 
@@ -11,12 +8,10 @@ class DocString:
           doc: The docstring to be parsed.
           attributes: A dictionary of additional attributes. Defaults to None.
         """
-        self.summary = doc.splitlines()[0]
+        self.summary = None
         """The summary of the docstring, which is the first line of the docstring."""
         self.description = None
         """The description of the docstring, which is everything after the summary."""
-        doc = textwrap.dedent(doc[len(self.summary) + 2 :])
-
         self.attributes: dict[str, str] = attributes or {}
         """A dictionary of the attributes specified in the docstring."""
         self.arguments: dict[str, str] = {}
@@ -67,3 +62,7 @@ class DocString:
                     self.description += line + "\n"
         if self.description:
             self.description = self.description[:-1]
+
+        if self.description:
+            self.summary = self.description.splitlines()[0]
+            self.description = self.description[len(self.summary) :]
