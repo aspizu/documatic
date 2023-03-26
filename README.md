@@ -47,7 +47,7 @@ pip install markdown-it-py
 
 ### Options:
 
-- `-h, --help` - show the help message and exit
-- `--input INPUT` - Path to a directory containing a Python package. This directory must contain an __init__.py file.
-- `--output OUTPUT` - Path to a directory to render documentation into. Will be cleared. Defaults to docs/
-- `--writer WRITER` - Writer used to render documentation files. Available writers: HTMLWriter, MarkdownWriter. Defaults to MarkdownWriter.
+- `-h, --help` - show the **help** message and exit
+- `--input INPUT` - Path to a **directory** containing a Python package. This directory must contain an `__init__.py` file.
+- `--output OUTPUT` - Path to a **directory** to render documentation into. Will be cleared. Defaults to `docs/`
+- `--writer WRITER` - **Writer** used to render documentation files. Available writers: `HTMLWriter`, `MarkdownWriter`. Defaults to `MarkdownWriter`.
